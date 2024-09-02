@@ -1,0 +1,254 @@
+Starting NewGame...
+First Guess: plier
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: plier
+
+Starting NewGame...
+First Guess: hello
+     Partial: 1
+     Correct: 1
+Second Guess: hound
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: hound
+
+Starting NewGame...
+First Guess: hello
+     Partial: 3
+     Correct: 0
+!!! Gave Up !!!
+The Word Was: blend
+
+Starting NewGame...
+First Guess: blink
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: blink
+
+Starting NewGame...
+First Guess: hello
+     Partial: 2
+     Correct: 0
+Second Guess: hello
+     Partial: 2
+     Correct: 0
+!!! Gave Up !!!
+The Word Was: shoot
+
+Starting NewGame...
+First Guess: eager
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: eager
+
+Starting NewGame...
+Starting NewGame...
+First Guess: swarm
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: swarm
+
+Starting NewGame...
+First Guess: hello
+     Partial: 0
+     Correct: 0
+Second Guess: build
+     Partial: 2
+     Correct: 0
+Third Guess: incur
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: incur
+
+Starting NewGame...
+First Guess: joist
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: joist
+
+Starting NewGame...
+Third Guess: incur
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: incur
+
+Starting NewGame...
+!!! Gave Up !!!
+The Word Was: incur
+
+Starting NewGame...
+First Guess: tribe
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: tribe
+
+Starting NewGame...
+Starting NewGame...
+Starting NewGame...
+First Guess: howdy
+     Partial: 0
+     Correct: 1
+Second Guess: horse
+     Partial: 0
+     Correct: 0
+Third Guess: house
+     Partial: 1
+     Correct: 0
+Fourth Guess: lapse
+     Partial: 0
+     Correct: 0
+Starting NewGame...
+First Guess: crane
+     Partial: 3
+     Correct: 0
+Second Guess: erase
+     Partial: 4
+     Correct: 0
+Third Guess: drain
+     Partial: 2
+     Correct: 0
+Fourth Guess: reach
+     Partial: 3
+     Correct: 0
+Fifth Guess: alpha
+     Partial: 2
+     Correct: 0
+!!! Did Not Get The Word !!!
+The Word Was: baker
+
+Starting NewGame...
+First Guess: lapse
+     Partial: 2
+     Correct: 1
+Starting NewGame...
+First Guess: start
+     Partial: 3
+     Correct: 0
+Second Guess: exist
+     Partial: 2
+     Correct: 0
+Third Guess: trove
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: trove
+
+Starting NewGame...
+First Guess: build
+     Partial: 0
+     Correct: 0
+Second Guess: catch
+     Partial: 3
+     Correct: 1
+Third Guess: chase
+     Partial: 0
+     Correct: 4
+Fourth Guess: chafe
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: chafe
+
+Starting NewGame...
+First Guess: house
+     Partial: 2
+     Correct: 0
+Second Guess: catch
+     Partial: 1
+     Correct: 2
+Third Guess: fetch
+     Partial: 1
+     Correct: 1
+Starting NewGame...
+Starting NewGame...
+First Guess: patio
+     Partial: 0
+     Correct: 2
+Second Guess: quiet
+     Partial: 1
+     Correct: 0
+Third Guess: batch
+     Partial: 1
+     Correct: 2
+Fourth Guess: catty
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: catty
+
+Starting NewGame...
+First Guess: patio
+     Partial: 0
+     Correct: 0
+Second Guess: lever
+     Partial: 1
+     Correct: 0
+Third Guess: rough
+     Partial: 3
+     Correct: 0
+Fourth Guess: shrub
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: shrub
+
+Starting NewGame...
+First Guess: patio
+     Partial: 3
+     Correct: 0
+Second Guess: touch
+     Partial: 1
+     Correct: 1
+Third Guess: robot
+     Partial: 2
+     Correct: 2
+Fourth Guess: boast
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: boast
+
+Starting NewGame...
+Starting NewGame...
+First Guess: water
+     Partial: 1
+     Correct: 0
+Second Guess: point
+     Partial: 1
+     Correct: 1
+Third Guess: mouth
+     Partial: 0
+     Correct: 4
+Fourth Guess: south
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: south
+
+Starting NewGame...
+First Guess: irate
+     Partial: 1
+     Correct: 0
+Second Guess: child
+     Partial: 1
+     Correct: 1
+Third Guess: sling
+     Partial: 0
+     Correct: 2
+Fourth Guess: blimp
+     Partial: 0
+     Correct: 5
+!!! Correctly Got The Word !!!
+The Word Was: blimp
+
+Starting NewGame...
