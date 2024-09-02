@@ -1,0 +1,114 @@
+    .pos 0
+    irmovq stack, %rsp
+    call main
+    halt
+
+matrixA:
+    .quad $9
+    .quad $8
+    .quad $7
+    .quad $6
+    .quad $5
+    .quad $4
+    .quad $3
+    .quad $2
+    .quad $1
+
+matrixB:
+    .quad $1
+    .quad $2
+    .quad $3
+    .quad $4
+    .quad $5
+    .quad $6
+    .quad $7
+    .quad $8
+    .quad $9
+
+matrixC:
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    .quad $0
+    
+main: 
+    # the number of mRows and mCols
+    irmovq $3, %r12 
+    # double loop counters 
+    irmovq $0, %rsi  # Counter for rows iterator
+    irmovq $0, %rdi  # Counter for columns iterator
+
+    # do nothing for one instruction to prove nop works
+    nop
+
+outer_loop:
+    # Check if we've reached the end of the rows
+    #r8 used for temporary copy value
+    rrmovq %rsi, %r8 
+    # check whether the result is greater or equal 0. 
+    subq %r12, %r8
+    jge end_outer
+
+    # initialize the column counter 
+    irmovq $0, %rdi
+
+inner_loop:
+    # Check if we've reached the end of the columns
+    # the same thought above check. 
+    rrmovq %rdi, %r9
+    subq %r12, %r9
+    # check whether the result is greater or equal 0, that is, whether the columns iterator reach the end. 
+    jge end_inner
+
+    # Calculate the index of the current element of value in the matrix, recall [A + i*8*c + j*8]
+    rrmovq %rsi, %rax          # Calculate row index
+    # add 3 times by original value %rsi to achieve the function of multiply by 3. 
+    addq %rsi, %rax 
+    addq %rsi, %rax          # at here, since c = 3, we get 3*i  
+    addq %rdi, %rax          # Add column index, so here we get 3*i + j
+    # add 8 times by its value to achieve the function of multiply by 8. 
+    rrmovq %rax, %r10        # temporary saved its original value
+    addq %r10, %rax          # Multiply by 8 (size of integer)
+    addq %r10, %rax
+    addq %r10, %rax
+    addq %r10, %rax
+    addq %r10, %rax
+    addq %r10, %rax
+    addq %r10, %rax          # at here, we get (3*i+j)*8, that is, 3*i*8 + j*8 
+
+    # Load elements from matrices A and B
+    # calculate the address of element of matrixA 
+    mrmovq matrixA(%rax), %rbx               # Load element from matrix A and save it to %rbx
+    mrmovq matrixB(%rax), %rdx               # Load element from matrix B and save it to %rdx
+
+    # Add the elements
+    addq %rdx, %rbx
+
+    # Store the result in matrix C
+    # Calculate the address of element in matrixC
+    irmovq $4, %r8 
+    addq %r8, %rax
+    rmmovq %rbx, matrixC(%rax)             # Store result in matrix C
+
+    # Increment column counter
+    irmovq $1, %r13
+    addq %r13, %rdi
+    jmp inner_loop
+
+end_inner:
+    # Increment row counter
+    irmovq $1, %r13
+    addq %r13, %rsi
+    jmp outer_loop
+
+end_outer:
+    # Exit program
+    ret
+    .pos 0xf00
+stack: 
+

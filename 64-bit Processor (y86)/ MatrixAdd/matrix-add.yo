@@ -1,0 +1,114 @@
+0x000:                      |     .pos 0
+0x000: 30f4000f000000000000 |     irmovq stack, %rsp
+0x00a: 80ec00000000000000   |     call main
+0x013: 00                   |     halt
+                            | 
+0x014:                      | matrixA:
+0x014: 0900000000000000     |     .quad $9
+0x01c: 0800000000000000     |     .quad $8
+0x024: 0700000000000000     |     .quad $7
+0x02c: 0600000000000000     |     .quad $6
+0x034: 0500000000000000     |     .quad $5
+0x03c: 0400000000000000     |     .quad $4
+0x044: 0300000000000000     |     .quad $3
+0x04c: 0200000000000000     |     .quad $2
+0x054: 0100000000000000     |     .quad $1
+                            | 
+0x05c:                      | matrixB:
+0x05c: 0100000000000000     |     .quad $1
+0x064: 0200000000000000     |     .quad $2
+0x06c: 0300000000000000     |     .quad $3
+0x074: 0400000000000000     |     .quad $4
+0x07c: 0500000000000000     |     .quad $5
+0x084: 0600000000000000     |     .quad $6
+0x08c: 0700000000000000     |     .quad $7
+0x094: 0800000000000000     |     .quad $8
+0x09c: 0900000000000000     |     .quad $9
+                            | 
+0x0a4:                      | matrixC:
+0x0a4: 0000000000000000     |     .quad $0
+0x0ac: 0000000000000000     |     .quad $0
+0x0b4: 0000000000000000     |     .quad $0
+0x0bc: 0000000000000000     |     .quad $0
+0x0c4: 0000000000000000     |     .quad $0
+0x0cc: 0000000000000000     |     .quad $0
+0x0d4: 0000000000000000     |     .quad $0
+0x0dc: 0000000000000000     |     .quad $0
+0x0e4: 0000000000000000     |     .quad $0
+                            |     
+0x0ec:                      | main: 
+                            |     # the number of mRows and mCols
+0x0ec: 30fc0300000000000000 |     irmovq $3, %r12 
+                            |     # double loop counters 
+0x0f6: 30f60000000000000000 |     irmovq $0, %rsi  # Counter for rows iterator
+0x100: 30f70000000000000000 |     irmovq $0, %rdi  # Counter for columns iterator
+                            | 
+                            |     # do nothing for one instruction to prove nop works
+0x10a: 10                   |     nop
+                            | 
+0x10b:                      | outer_loop:
+                            |     # Check if we've reached the end of the rows
+                            |     #r8 used for temporary copy value
+0x10b: 2068                 |     rrmovq %rsi, %r8 
+                            |     # check whether the result is greater or equal 0. 
+0x10d: 61c8                 |     subq %r12, %r8
+0x10f: 759d01000000000000   |     jge end_outer
+                            | 
+                            |     # initialize the column counter 
+0x118: 30f70000000000000000 |     irmovq $0, %rdi
+                            | 
+0x122:                      | inner_loop:
+                            |     # Check if we've reached the end of the columns
+                            |     # the same thought above check. 
+0x122: 2079                 |     rrmovq %rdi, %r9
+0x124: 61c9                 |     subq %r12, %r9
+                            |     # check whether the result is greater or equal 0, that is, whether the columns iterator reach the end. 
+0x126: 758801000000000000   |     jge end_inner
+                            | 
+                            |     # Calculate the index of the current element of value in the matrix, recall [A + i*8*c + j*8]
+0x12f: 2060                 |     rrmovq %rsi, %rax          # Calculate row index
+                            |     # add 3 times by original value %rsi to achieve the function of multiply by 3. 
+0x131: 6060                 |     addq %rsi, %rax 
+0x133: 6060                 |     addq %rsi, %rax          # at here, since c = 3, we get 3*i  
+0x135: 6070                 |     addq %rdi, %rax          # Add column index, so here we get 3*i + j
+                            |     # add 8 times by its value to achieve the function of multiply by 8. 
+0x137: 200a                 |     rrmovq %rax, %r10        # temporary saved its original value
+0x139: 60a0                 |     addq %r10, %rax          # Multiply by 8 (size of integer)
+0x13b: 60a0                 |     addq %r10, %rax
+0x13d: 60a0                 |     addq %r10, %rax
+0x13f: 60a0                 |     addq %r10, %rax
+0x141: 60a0                 |     addq %r10, %rax
+0x143: 60a0                 |     addq %r10, %rax
+0x145: 60a0                 |     addq %r10, %rax          # at here, we get (3*i+j)*8, that is, 3*i*8 + j*8 
+                            | 
+                            |     # Load elements from matrices A and B
+                            |     # calculate the address of element of matrixA 
+0x147: 50301400000000000000 |     mrmovq matrixA(%rax), %rbx               # Load element from matrix A and save it to %rbx
+0x151: 50205c00000000000000 |     mrmovq matrixB(%rax), %rdx               # Load element from matrix B and save it to %rdx
+                            | 
+                            |     # Add the elements
+0x15b: 6023                 |     addq %rdx, %rbx
+                            | 
+                            |     # Store the result in matrix C
+                            |     # Calculate the address of element in matrixC
+0x15d: 30f80400000000000000 |     irmovq $4, %r8 
+0x167: 6080                 |     addq %r8, %rax
+0x169: 4030a400000000000000 |     rmmovq %rbx, matrixC(%rax)             # Store result in matrix C
+                            | 
+                            |     # Increment column counter
+0x173: 30fd0100000000000000 |     irmovq $1, %r13
+0x17d: 60d7                 |     addq %r13, %rdi
+0x17f: 702201000000000000   |     jmp inner_loop
+                            | 
+0x188:                      | end_inner:
+                            |     # Increment row counter
+0x188: 30fd0100000000000000 |     irmovq $1, %r13
+0x192: 60d6                 |     addq %r13, %rsi
+0x194: 700b01000000000000   |     jmp outer_loop
+                            | 
+0x19d:                      | end_outer:
+                            |     # Exit program
+0x19d: 90                   |     ret
+0xf00:                      |     .pos 0xf00
+0xf00:                      | stack: 
+                            | 
