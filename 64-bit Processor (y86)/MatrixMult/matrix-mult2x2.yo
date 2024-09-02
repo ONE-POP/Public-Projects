@@ -1,0 +1,182 @@
+0x000:                      |     .pos 0
+0x000: 30f4000f000000000000 |     irmovq stack, %rsp
+0x00a: 30f80200000000000000 |     irmovq $2, %r8 # constant 3 (count for all loops)
+0x014: 30f90100000000000000 |     irmovq $1, %r9 # constant 1 (used throughout)
+0x01e: 808800000000000000   |     call main
+0x027: 00                   |     halt
+                            | 
+                            | # 2 by 2 matrices
+0x028:                      | matrix1:
+0x028: 0100000000000000     |     .quad $1    # each element is a 64-bit integer
+0x030: 0000000000000000     |     .quad $0
+0x038: 0000000000000000     |     .quad $0
+0x040: 0200000000000000     |     .quad $2
+                            | 
+0x048:                      | matrix2:
+0x048: 0300000000000000     |     .quad $3    # each element is a 64-bit integer
+0x050: 0100000000000000     |     .quad $1
+0x058: 0200000000000000     |     .quad $2
+0x060: 0100000000000000     |     .quad $1
+                            | 
+0x068:                      | result:
+0x068: 0000000000000000     |     .quad $0    # each element is a 64-bit integer
+0x070: 0000000000000000     |     .quad $0
+0x078: 0000000000000000     |     .quad $0
+0x080: 0000000000000000     |     .quad $0
+                            | 
+                            | # matrix1 in %rdi, matrix2 in %rsi, result in %rax
+0x088:                      | main:
+0x088: 30f72800000000000000 |     irmovq matrix1, %rdi
+0x092: 30f64800000000000000 |     irmovq matrix2, %rsi
+0x09c: 30f06800000000000000 |     irmovq result, %rax
+                            | 
+0x0a6: 80b000000000000000   |     call matrix_multiply
+0x0af: 90                   |     ret
+                            | 
+                            | # i in %rcx, j in %rdx, x in %rbx
+                            | # matrix1 in %r10, matrix2 in %r11, matrix3 in %r12
+                            | # multiplication result in %r13
+0x0b0:                      | matrix_multiply:
+0x0b0: 30f10000000000000000 |     irmovq $0, %rcx # i = 0
+                            | 
+0x0ba:                      |     matrix_multiply_loop1:
+0x0ba: 30f20000000000000000 |         irmovq $0, %rdx # j = 0
+                            | 
+0x0c4:                      |         matrix_multiply_loop2:
+0x0c4: 30f30000000000000000 |             irmovq $0, %rbx # x = 0
+                            | 
+0x0ce:                      |             matrix_multiply_loop3:
+                            |                 # save registers
+0x0ce: a07f                 |                 pushq %rdi
+0x0d0: a06f                 |                 pushq %rsi
+0x0d2: a00f                 |                 pushq %rax
+                            | 
+                            |                 # m1_offset: matrix1[i][x]
+0x0d4: 2017                 |                 rrmovq %rcx, %rdi
+0x0d6: 2036                 |                 rrmovq %rbx, %rsi
+0x0d8: 808001000000000000   |                 call get_offset
+0x0e1: 200a                 |                 rrmovq %rax, %r10
+                            | 
+                            |                 # m2_offset: matrix2[x][j]
+0x0e3: 2037                 |                 rrmovq %rbx, %rdi
+0x0e5: 2026                 |                 rrmovq %rdx, %rsi
+0x0e7: 808001000000000000   |                 call get_offset
+0x0f0: 200b                 |                 rrmovq %rax, %r11
+                            | 
+                            |                 # result_offset: result[i][j]
+0x0f2: 2017                 |                 rrmovq %rcx, %rdi
+0x0f4: 2026                 |                 rrmovq %rdx, %rsi
+0x0f6: 808001000000000000   |                 call get_offset
+0x0ff: 200c                 |                 rrmovq %rax, %r12
+                            | 
+                            |                 # restore registers
+0x101: b00f                 |                 popq %rax
+0x103: b06f                 |                 popq %rsi
+0x105: b07f                 |                 popq %rdi
+                            | 
+                            |                 # get matrix1[i][x] with offset
+0x107: 607a                 |                 addq %rdi, %r10
+0x109: 50aa0000000000000000 |                 mrmovq (%r10), %r10
+                            | 
+                            |                 # get matrix2[x][j] with offset
+0x113: 606b                 |                 addq %rsi, %r11
+0x115: 50bb0000000000000000 |                 mrmovq (%r11), %r11
+                            | 
+                            |                 # save registers
+0x11f: a06f                 |                 pushq %rsi
+0x121: a07f                 |                 pushq %rdi
+0x123: a00f                 |                 pushq %rax
+                            | 
+                            |                 # matrix1[i][x] * matrix2[x][j]
+0x125: 20a6                 |                 rrmovq %r10, %rsi
+0x127: 20b7                 |                 rrmovq %r11, %rdi
+0x129: 80b701000000000000   |                 call multiply
+0x132: 200d                 |                 rrmovq %rax, %r13
+                            | 
+                            |                 # restore registers
+0x134: b00f                 |                 popq %rax
+0x136: b07f                 |                 popq %rdi
+0x138: b06f                 |                 popq %rsi
+                            | 
+                            |                 # get result[i][j]
+0x13a: 600c                 |                 addq %rax, %r12
+0x13c: 50ec0000000000000000 |                 mrmovq (%r12), %r14
+                            | 
+                            |                 # result[i][j] += matrix1[i][x] * matrix2[x][j]
+0x146: 60de                 |                 addq %r13, %r14
+0x148: 40ec0000000000000000 |                 rmmovq %r14, (%r12)
+                            | 
+                            |                 # ++x
+0x152: 6093                 |                 addq %r9, %rbx
+0x154: 203a                 |                 rrmovq %rbx, %r10
+                            | 
+                            |                 # is x - 3 == 0
+0x156: 618a                 |                 subq %r8, %r10
+0x158: 74ce00000000000000   |                 jne matrix_multiply_loop3
+                            | 
+                            |         # ++j
+0x161: 6092                 |         addq %r9, %rdx
+0x163: 202a                 |         rrmovq %rdx, %r10
+                            | 
+                            |         # is j - 3 == 0
+0x165: 618a                 |         subq %r8, %r10
+0x167: 74c400000000000000   |         jne matrix_multiply_loop2
+                            | 
+                            |     # ++i
+0x170: 6091                 |     addq %r9, %rcx
+0x172: 201a                 |     rrmovq %rcx, %r10
+                            | 
+                            |     # is i - 3 == 0
+0x174: 618a                 |     subq %r8, %r10
+0x176: 74ba00000000000000   |     jne matrix_multiply_loop1
+0x17f: 90                   |     ret       
+                            | 
+                            | # index0 in %rdi, index1 in %rsi
+0x180:                      | get_offset:
+                            |     # index0 * 2
+0x180: a06f                 |     pushq %rsi
+0x182: 30f60200000000000000 |     irmovq $2, %rsi
+0x18c: 80b701000000000000   |     call multiply
+0x195: b06f                 |     popq %rsi
+                            |     
+                            |     # index0 * 2 + index1
+0x197: 6060                 |     addq %rsi, %rax
+                            | 
+                            |     # (index0 * 2 + index1) * 8
+0x199: a07f                 |     pushq %rdi
+0x19b: a06f                 |     pushq %rsi
+0x19d: 30f70800000000000000 |     irmovq $8, %rdi
+0x1a7: 2006                 |     rrmovq %rax, %rsi
+0x1a9: 80b701000000000000   |     call multiply
+0x1b2: b06f                 |     popq %rsi
+0x1b4: b07f                 |     popq %rdi
+                            |     
+0x1b6: 90                   |     ret # result in %rax
+                            | 
+                            | # num1 in %rdi, num2 in %rsi
+0x1b7:                      | multiply:
+0x1b7: 30f00000000000000000 |     irmovq $0, %rax
+                            |     
+                            |     # check if either is zero
+0x1c1: 6277                 |     andq %rdi, %rdi
+0x1c3: 73eb01000000000000   |     je zero
+0x1cc: 6266                 |     andq %rsi, %rsi
+0x1ce: 73eb01000000000000   |     je zero
+                            | 
+0x1d7: a0af                 |     pushq %r10 # save r10 before using
+0x1d9: 207a                 |     rrmovq %rdi, %r10 # count
+                            | 
+                            | # num1 in %r10, num2 in %rsi, result in %rax
+0x1db:                      | multiply_loop:
+0x1db: 6060                 |     addq %rsi, %rax
+0x1dd: 619a                 |     subq %r9, %r10
+0x1df: 74db01000000000000   |     jne multiply_loop
+                            |     
+0x1e8: b0af                 |     popq %r10 # restore r10
+0x1ea: 90                   |     ret # result in %rax
+                            | 
+0x1eb:                      | zero:
+0x1eb: 90                   |     ret
+                            | 
+0xf00:                      |     .pos 0xf00
+0xf00:                      | stack:

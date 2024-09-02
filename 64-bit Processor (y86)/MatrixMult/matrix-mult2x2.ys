@@ -1,0 +1,182 @@
+    .pos 0
+    irmovq stack, %rsp
+    irmovq $2, %r8 # constant 3 (count for all loops)
+    irmovq $1, %r9 # constant 1 (used throughout)
+    call main
+    halt
+
+# 2 by 2 matrices
+matrix1:
+    .quad $1    # each element is a 64-bit integer
+    .quad $0
+    .quad $0
+    .quad $2
+
+matrix2:
+    .quad $3    # each element is a 64-bit integer
+    .quad $1
+    .quad $2
+    .quad $1
+
+result:
+    .quad $0    # each element is a 64-bit integer
+    .quad $0
+    .quad $0
+    .quad $0
+
+# matrix1 in %rdi, matrix2 in %rsi, result in %rax
+main:
+    irmovq matrix1, %rdi
+    irmovq matrix2, %rsi
+    irmovq result, %rax
+
+    call matrix_multiply
+    ret
+
+# i in %rcx, j in %rdx, x in %rbx
+# matrix1 in %r10, matrix2 in %r11, matrix3 in %r12
+# multiplication result in %r13
+matrix_multiply:
+    irmovq $0, %rcx # i = 0
+
+    matrix_multiply_loop1:
+        irmovq $0, %rdx # j = 0
+
+        matrix_multiply_loop2:
+            irmovq $0, %rbx # x = 0
+
+            matrix_multiply_loop3:
+                # save registers
+                pushq %rdi
+                pushq %rsi
+                pushq %rax
+
+                # m1_offset: matrix1[i][x]
+                rrmovq %rcx, %rdi
+                rrmovq %rbx, %rsi
+                call get_offset
+                rrmovq %rax, %r10
+
+                # m2_offset: matrix2[x][j]
+                rrmovq %rbx, %rdi
+                rrmovq %rdx, %rsi
+                call get_offset
+                rrmovq %rax, %r11
+
+                # result_offset: result[i][j]
+                rrmovq %rcx, %rdi
+                rrmovq %rdx, %rsi
+                call get_offset
+                rrmovq %rax, %r12
+
+                # restore registers
+                popq %rax
+                popq %rsi
+                popq %rdi
+
+                # get matrix1[i][x] with offset
+                addq %rdi, %r10
+                mrmovq (%r10), %r10
+
+                # get matrix2[x][j] with offset
+                addq %rsi, %r11
+                mrmovq (%r11), %r11
+
+                # save registers
+                pushq %rsi
+                pushq %rdi
+                pushq %rax
+
+                # matrix1[i][x] * matrix2[x][j]
+                rrmovq %r10, %rsi
+                rrmovq %r11, %rdi
+                call multiply
+                rrmovq %rax, %r13
+
+                # restore registers
+                popq %rax
+                popq %rdi
+                popq %rsi
+
+                # get result[i][j]
+                addq %rax, %r12
+                mrmovq (%r12), %r14
+
+                # result[i][j] += matrix1[i][x] * matrix2[x][j]
+                addq %r13, %r14
+                rmmovq %r14, (%r12)
+
+                # ++x
+                addq %r9, %rbx
+                rrmovq %rbx, %r10
+
+                # is x - 3 == 0
+                subq %r8, %r10
+                jne matrix_multiply_loop3
+
+        # ++j
+        addq %r9, %rdx
+        rrmovq %rdx, %r10
+
+        # is j - 3 == 0
+        subq %r8, %r10
+        jne matrix_multiply_loop2
+
+    # ++i
+    addq %r9, %rcx
+    rrmovq %rcx, %r10
+
+    # is i - 3 == 0
+    subq %r8, %r10
+    jne matrix_multiply_loop1
+    ret       
+
+# index0 in %rdi, index1 in %rsi
+get_offset:
+    # index0 * 2
+    pushq %rsi
+    irmovq $2, %rsi
+    call multiply
+    popq %rsi
+    
+    # index0 * 2 + index1
+    addq %rsi, %rax
+
+    # (index0 * 2 + index1) * 8
+    pushq %rdi
+    pushq %rsi
+    irmovq $8, %rdi
+    rrmovq %rax, %rsi
+    call multiply
+    popq %rsi
+    popq %rdi
+    
+    ret # result in %rax
+
+# num1 in %rdi, num2 in %rsi
+multiply:
+    irmovq $0, %rax
+    
+    # check if either is zero
+    andq %rdi, %rdi
+    je zero
+    andq %rsi, %rsi
+    je zero
+
+    pushq %r10 # save r10 before using
+    rrmovq %rdi, %r10 # count
+
+# num1 in %r10, num2 in %rsi, result in %rax
+multiply_loop:
+    addq %rsi, %rax
+    subq %r9, %r10
+    jne multiply_loop
+    
+    popq %r10 # restore r10
+    ret # result in %rax
+
+zero:
+    ret
+
+    .pos 0xf00
+stack:
